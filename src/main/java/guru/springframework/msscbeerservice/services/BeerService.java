@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
  */
 public interface BeerService {
     BeerDto getById(UUID beerId, Boolean showInventoryOnHand);
+    
+    BeerDto getByUpc(String upc, Boolean showInventoryOnHand);
 
     BeerDto saveNewBeer(BeerDto beerDto);
 
