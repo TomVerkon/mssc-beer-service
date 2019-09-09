@@ -35,46 +35,40 @@ class BeerControllerTest {
     @Test
     void getBeerById() throws Exception {
 
-        given(beerService.getById(any())).willReturn(getValidBeerDto());
+	UUID beerId = UUID.randomUUID();
+	
+	given(beerService.getById(beerId, Boolean.FALSE)).willReturn(getValidBeerDto());
 
-        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+	mockMvc.perform(get("/api/v1/beer/" + beerId.toString()).param("showInventoryOnHand", "false")
+		.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
     }
 
     @Test
     void saveNewBeer() throws Exception {
 
-        BeerDto beerDto = getValidBeerDto();
-        String beerDtoJson = objectMapper.writeValueAsString(beerDto);
+	BeerDto beerDto = getValidBeerDto();
+	String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-        given(beerService.saveNewBeer(any())).willReturn(getValidBeerDto());
+	given(beerService.saveNewBeer(any())).willReturn(getValidBeerDto());
 
-        mockMvc.perform(post("/api/v1/beer/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(beerDtoJson))
-                .andExpect(status().isCreated());
+	mockMvc.perform(post("/api/v1/beer/").contentType(MediaType.APPLICATION_JSON).content(beerDtoJson))
+		.andExpect(status().isCreated());
     }
 
     @Test
     void updateBeerById() throws Exception {
-        given(beerService.updateBeer(any(), any())).willReturn(getValidBeerDto());
+	given(beerService.updateBeer(any(), any())).willReturn(getValidBeerDto());
 
-        BeerDto beerDto = getValidBeerDto();
-        String beerDtoJson = objectMapper.writeValueAsString(beerDto);
+	BeerDto beerDto = getValidBeerDto();
+	String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-        mockMvc.perform(put("/api/v1/beer/" + UUID.randomUUID().toString())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(beerDtoJson))
-                .andExpect(status().isNoContent());
+	mockMvc.perform(put("/api/v1/beer/" + UUID.randomUUID().toString()).contentType(MediaType.APPLICATION_JSON)
+		.content(beerDtoJson)).andExpect(status().isNoContent());
     }
 
-    BeerDto getValidBeerDto(){
-        return BeerDto.builder()
-                .beerName("My Beer")
-                .beerStyle(BeerStyleEnum.ALE)
-                .price(new BigDecimal("2.99"))
-                .upc(BeerLoader.BEER_1_UPC)
-                .build();
+    BeerDto getValidBeerDto() {
+	return BeerDto.builder().beerName("My Beer").beerStyle(BeerStyleEnum.ALE).price(new BigDecimal("2.99"))
+		.upc(BeerLoader.BEER_1_UPC).build();
     }
 }

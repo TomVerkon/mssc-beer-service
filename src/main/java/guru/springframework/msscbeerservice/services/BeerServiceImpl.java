@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,13 @@ public class BeerServiceImpl implements BeerService {
     private final BeerMapper beerMapper;
 
     @Override
-    public BeerDto getById(UUID beerId) {
-	return beerMapper.beerToBeerDto(beerRepository.findById(beerId).orElseThrow(NotFoundException::new));
+    public BeerDto getById(UUID beerId, Boolean showInventoryOnHand) {
+	if (null == showInventoryOnHand || !showInventoryOnHand) {
+	    return beerMapper.beerToBeerDto(beerRepository.findById(beerId).orElseThrow(NotFoundException::new));
+	} else {
+	    return beerMapper
+		    .beerToBeerDtoWithInventory(beerRepository.findById(beerId).orElseThrow(NotFoundException::new));
+	}
     }
 
     @Override
@@ -49,7 +55,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest) {
+    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest,
+	    Boolean showInventoryOnHand) {
 
 	BeerPagedList beerPagedList;
 	Page<Beer> beerPage;
@@ -63,9 +70,15 @@ public class BeerServiceImpl implements BeerService {
 	} else {
 	    beerPage = beerRepository.findAll(pageRequest);
 	}
+	
+	List<BeerDto> beerDtos = null;
+	if (null == showInventoryOnHand || !showInventoryOnHand) {
+	    beerDtos = beerPage.getContent().stream().map(beerMapper::beerToBeerDto).collect(Collectors.toList());
+	} else {
+	    beerDtos = beerPage.getContent().stream().map(beerMapper::beerToBeerDtoWithInventory).collect(Collectors.toList());
+	}
 
-	beerPagedList = new BeerPagedList(
-		beerPage.getContent().stream().map(beerMapper::beerToBeerDto).collect(Collectors.toList()),
+	beerPagedList = new BeerPagedList(beerDtos,
 		PageRequest.of(beerPage.getPageable().getPageNumber(), beerPage.getPageable().getPageSize()),
 		beerPage.getTotalElements());
 
