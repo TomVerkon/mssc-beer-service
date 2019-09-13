@@ -6,6 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+		<!-- https://mvnrepository.com/artifact/com.github.sfg-beer-works/sfg-brewery-bom -->
         <groupId>com.github.sfg-beer-works</groupId>
         <artifactId>sfg-brewery-bom</artifactId>
         <version>1.0.7</version>
