@@ -11,6 +11,7 @@ public class JMSConfig {
     public static final String MY_QUEUE = "my-hello-world";
     public static final String MY_SEND_RCV_QUEUE = "my-send-recv";
     public static final String BREWING_REQUEST_QUEUE = "brewing-request";
+    public static final String NEW_INVENTORY_QUEUE = "new-inventory";
     
     @Bean
     MessageConverter messageConverter() {

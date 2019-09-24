@@ -33,10 +33,10 @@ public class BeerServiceImpl implements BeerService {
     public BeerDto getById(UUID beerId, Boolean showInventoryOnHand) {
 	
 	if (null == showInventoryOnHand || !showInventoryOnHand) {
-	    return beerMapper.beerToBeerDto(beerRepository.findById(beerId).orElseThrow(NotFoundException::new));
+	    return beerMapper.beerToBeerDto(beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("Beer with id: " + beerId.toString())));
 	} else {
 	    return beerMapper
-		    .beerToBeerDtoWithInventory(beerRepository.findById(beerId).orElseThrow(NotFoundException::new));
+		    .beerToBeerDtoWithInventory(beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("Beer with id: " + beerId.toString())));
 	}
     }
 
@@ -45,10 +45,10 @@ public class BeerServiceImpl implements BeerService {
     public BeerDto getByUpc(String upc, Boolean showInventoryOnHand) {
 	
 	if (null == showInventoryOnHand || !showInventoryOnHand) {
-	    return beerMapper.beerToBeerDto(beerRepository.findByUpc(upc).orElseThrow(NotFoundException::new));
+	    return beerMapper.beerToBeerDto(beerRepository.findByUpc(upc).orElseThrow(() -> new NotFoundException("Beer with upc: " + upc.toString())));
 	} else {
 	    return beerMapper
-		    .beerToBeerDtoWithInventory(beerRepository.findByUpc(upc).orElseThrow(NotFoundException::new));
+		    .beerToBeerDtoWithInventory(beerRepository.findByUpc(upc).orElseThrow(() -> new NotFoundException("Beer with upc: " + upc.toString())));
 	}
     }
 
@@ -59,7 +59,7 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public BeerDto updateBeer(UUID beerId, BeerDto beerDto) {
-	Beer beer = beerRepository.findById(beerId).orElseThrow(NotFoundException::new);
+	Beer beer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("Beer with id: " + beerId.toString()));
 
 	beer.setBeerName(beerDto.getBeerName());
 	beer.setBeerStyle(beerDto.getBeerStyle().name());
