@@ -1,6 +1,6 @@
 package guru.springframework.msscbeerservice.services.brewing;
 
-import java.util.Optional;
+import javax.transaction.Transactional;
 
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -24,10 +24,11 @@ public class BrewBeerListener {
     private final BeerRepository beerRepository;
     private final JmsTemplate jmsTemplate;
     
+    @Transactional
     @JmsListener(destination = JMSConfig.BREWING_REQUEST_QUEUE)
     public void listen(BrewBeerEvent event) {
 	BeerDto beerDto = event.getBeerDto();
-	Beer beer = beerRepository.findById(beerDto.getId()).orElseThrow(() -> new NotFoundException("Beer with id: " + beerDto.getId().toString()));
+	Beer beer = beerRepository.findByUpc(beerDto.getUpc()).orElseThrow(() -> new NotFoundException("Beer with upc: " + beerDto.getUpc()));
 	beerDto.setQuantityOnHand(beer.getQuantityToBrew());
 	log.debug("Brewed beer " + beer.getMinOnHand() + " : QOH " + beerDto.getQuantityOnHand());
 	jmsTemplate.convertAndSend(JMSConfig.NEW_INVENTORY_QUEUE, new InventoryEvent(beerDto));

@@ -1,7 +1,5 @@
 package guru.springframework.msscbeerservice.services.brewing;
 
-import java.util.List;
-
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ public class BrewingService {
     public void checkForLowInventory() {
 	Iterable<Beer> beers = beerRepository.findAll();
 	beers.forEach(beer -> {
-	    Integer beerQOH = inventoryService.getOnhandInventory(beer.getId());
+	    Integer beerQOH = inventoryService.getOnhandInventory(beer.getUpc());
 	    log.debug("Min on hand is: " + beer.getMinOnHand());
 	    log.debug("Inventory is: " +  beerQOH);
 	    

@@ -2,7 +2,6 @@ package guru.springframework.msscbeerservice.services.inventory;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -20,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryService {
     
-    private final String INVENTORY_PATH = "/api/v1/beer/{beerId}/inventory";
+    private final String INVENTORY_PATH = "/api/v1/beer/{upc}/inventory";
     private final RestTemplate restTemplate;
 
     private String beerInventoryServiceHost;
@@ -34,13 +33,13 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
     }
 
     @Override
-    public Integer getOnhandInventory(UUID beerId) {
+    public Integer getOnhandInventory(String upc) {
 
         log.debug("Calling Inventory Service");
 
         ResponseEntity<List<BeerInventoryDto>> responseEntity = restTemplate
                 .exchange(beerInventoryServiceHost + INVENTORY_PATH, HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<BeerInventoryDto>>(){}, (Object) beerId);
+                        new ParameterizedTypeReference<List<BeerInventoryDto>>(){}, (Object) upc);
 
         //sum from inventory list
         Integer onHand = Objects.requireNonNull(responseEntity.getBody())

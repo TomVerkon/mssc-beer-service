@@ -1,5 +1,14 @@
 package guru.springframework.msscbeerservice.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import guru.springframework.msscbeerservice.domain.Beer;
 import guru.springframework.msscbeerservice.repositories.BeerRepository;
 import guru.springframework.msscbeerservice.web.controller.NotFoundException;
@@ -8,16 +17,6 @@ import guru.springframework.msscbeerservice.web.model.BeerDto;
 import guru.springframework.msscbeerservice.web.model.BeerPagedList;
 import guru.springframework.msscbeerservice.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by jt on 2019-06-06.
@@ -30,7 +29,7 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false")
-    public BeerDto getById(UUID beerId, Boolean showInventoryOnHand) {
+    public BeerDto getById(Long beerId, Boolean showInventoryOnHand) {
 	
 	if (null == showInventoryOnHand || !showInventoryOnHand) {
 	    return beerMapper.beerToBeerDto(beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("Beer with id: " + beerId.toString())));
@@ -58,8 +57,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public BeerDto updateBeer(UUID beerId, BeerDto beerDto) {
-	Beer beer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("Beer with id: " + beerId.toString()));
+    public BeerDto updateBeer(String upc, BeerDto beerDto) {
+	Beer beer = beerRepository.findByUpc(upc).orElseThrow(() -> new NotFoundException("Beer with upc: " + upc));
 
 	beer.setBeerName(beerDto.getBeerName());
 	beer.setBeerStyle(beerDto.getBeerStyle().name());
